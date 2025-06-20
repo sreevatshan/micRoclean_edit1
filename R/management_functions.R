@@ -88,13 +88,12 @@ wrap_phyloseq = function(counts, meta) {
 #' @export
 
 FL = function(counts, new_counts = NULL){
-
   X_R = new_counts
 
-  #calculate corresponding norm
-  Netw = t(as.matrix(counts))%*%as.matrix(counts)
-  Netw_R = t(as.matrix(X_R))%*%as.matrix(X_R)
+  # calculate corresponding norm
+  Netw = t(as.matrix(counts)) %*% as.matrix(counts)
+  Netw_R = t(as.matrix(X_R)) %*% as.matrix(X_R)
 
-  FL =  1-(norm(Netw_R), "F")^2/norm(Netw), "F")^2)
+  FL = 1 - (norm(Netw_R, "F")^2 / norm(Netw, "F")^2)
   return(FL)
 }
