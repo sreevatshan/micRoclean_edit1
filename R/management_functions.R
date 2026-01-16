@@ -9,7 +9,6 @@
 #' @param blocklist Vector of known previously identified contaminant features
 #' @param remove_if Threshold for number of steps feature must be identified as potential contaminant to be removed from final cleaned count matrix. Default set to 1.
 #' @param step2_threshold Threshold value for prevalence method of decontam
-#' @param technical_replicates Vector identifying technical replicates across batches
 #' @param seed Random seed
 #'
 #' @return List object with original matrix, decontaminated matrix, character string of all removed contaminants (if 'biomarker'), and corresponding
@@ -23,7 +22,7 @@ micRoclean = function(counts, meta, research_goal, control_name, control_order =
   }
 
   if (research_goal == 'biomarker') {
-     res = pipeline2(counts, meta, blocklist, control_name, technical_replicates, remove_if,
+     res = pipeline2(counts, meta, blocklist, control_name, remove_if,
                      step2_threshold, seed)
      return(res)
   }
