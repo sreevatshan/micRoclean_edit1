@@ -12,13 +12,12 @@
 #' @param control_name Character name of controls within metadata
 #' @param remove_if Threshold for number of steps feature must be identified as potential contaminant to be removed from final cleaned count matrix. Default set to 1.
 #' @param step2_threshold Threshold value for prevalence method of decontam
-#' @param technical_replicates Vector identifying technical replicates across batches
 #' @param seed Random seed
 #' @return List object with contaminant matrix, decontaminated count matrix, character string of all removed contaminants,
 #' and filtering loss (FL) statistic
 #' @export
 
-pipeline2 = function(counts, meta, blocklist, control_name, technical_replicates, remove_if = 1,
+pipeline2 = function(counts, meta, blocklist, control_name, remove_if = 1,
                      step2_threshold = 0.5, seed = 42) {
 
   set.seed(seed)
@@ -41,10 +40,6 @@ pipeline2 = function(counts, meta, blocklist, control_name, technical_replicates
 
   s2_res = step2(counts, meta, step2_threshold)
 
-  # Step 3: Remove if DA in diff batches for technical replicates
-
-  s3_res = step3(counts, meta, technical_replicates)
-
   # Step 4: Remove known 'blocklist' of contaminants
 
   s4_res = step4(counts, blocklist)
@@ -55,7 +50,6 @@ pipeline2 = function(counts, meta, blocklist, control_name, technical_replicates
   res = data.frame('feature' = colnames(counts),
                    'step1' = ifelse(colnames(counts) %in% s1_res, TRUE, FALSE),
                    'step2' = ifelse(colnames(counts) %in% s2_res, TRUE, FALSE),
-                   'step3' = ifelse(colnames(counts) %in% s3_res, TRUE, FALSE),
                    'step4' = ifelse(colnames(counts) %in% s4_res, TRUE, FALSE))
 
   # return column with summed cases where feature was true
@@ -155,57 +149,6 @@ step2 = function(counts, meta, threshold) {
   # return list of tagged contaminant features
   return(rownames(s2_res[ind,]))
 
-}
-
-#' step3
-#'
-#' Run step 3 of pipeline 2 to identify features with different abundance in technical
-#' replicates across batches
-#'
-#' @family pipeline2
-#'
-#' @param counts Count matrix with samples as rows and features as counts
-#' @param meta Matrix with columns is_control, sample_type, and batch
-#' @param technical_replicates Matrix identifying technical replicates across batches with batch as column and rows matching replicates
-#' @return Vector of features tagged as contaminants
-#' @export
-
-step3 = function(counts, meta, technical_replicates) {
-
-  # wrap dataframe for technical replicates in each batch ordered by match (line ~336 original_pipeline2.R)
-  count_replicate = list()
-  PA_replicate = list()
-
-  for (i in 1:dplyr::n_distinct(meta$batch)) {
-    vals = technical_replicates[,i]
-    count_replicate[[i]] = data.frame(t(counts[vals,]))
-
-    # create presence absence matrices
-    j = as.matrix(count_replicate[[i]])
-    j[j!=0] = 1
-    PA_replicate[[i]] = j
-  }
-
-  # create dataframe to contain results from IRR kappa
-  kappa_results = data.frame(value = numeric(), statistic = numeric(), p.value = numeric())
-
-  # get kappa values using for loop
-  batch1.df.PA = PA_replicate[[1]]
-  batch2.df.PA = PA_replicate[[2]]
-
-  for (i in nrow(PA_replicate[[1]])) {
-    k = irr::kappa2(t(rbind(batch1.df.PA[i,], batch2.df.PA[i,])), "unweighted")
-    kappa_results[i,"value"] = k$value
-    kappa_results[i,"statistic"] = k$statistic
-    kappa_results[i,"p.value"] = k$p.value
-  }
-
-  row.names(kappa_results) = colnames(counts)
-
-  kappa_results.no_NA = subset(kappa_results, !is.na(value) & !is.na(p.value))
-  kappa_res_remove = subset(kappa_results.no_NA, p.value >= 0.05 | value <= 0.4)
-
-  return(rownames(kappa_res_remove))
 }
 
 #' step4
