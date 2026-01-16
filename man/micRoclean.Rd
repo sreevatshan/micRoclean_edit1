@@ -14,7 +14,6 @@ micRoclean(
   blocklist,
   remove_if = 1,
   step2_threshold = 0.5,
-  technical_replicates,
   seed = 42
 )
 }
@@ -34,8 +33,6 @@ micRoclean(
 \item{remove_if}{Threshold for number of steps feature must be identified as potential contaminant to be removed from final cleaned count matrix. Default set to 1.}
 
 \item{step2_threshold}{Threshold value for prevalence method of decontam}
-
-\item{technical_replicates}{Vector identifying technical replicates across batches}
 
 \item{seed}{Random seed}
 }
