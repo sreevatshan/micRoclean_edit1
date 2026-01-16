@@ -20,12 +20,11 @@ visualize_pipeline = function(pipeline_output, interactive = FALSE)  {
     # import data
     s1_rem = pipeline_output$contaminant_id$feature[pipeline_output$contaminant_id$step1==TRUE]
     s2_rem = pipeline_output$contaminant_id$feature[pipeline_output$contaminant_id$step2==TRUE]
-    s3_rem = pipeline_output$contaminant_id$feature[pipeline_output$contaminant_id$step3==TRUE]
     s4_rem = pipeline_output$contaminant_id$feature[pipeline_output$contaminant_id$step4==TRUE]
     # Venn comparison of contaminant taxa removed across steps
     x = list(s1_rem, s2_rem, s3_rem, s4_rem)
     p = ggVennDiagram::ggVennDiagram(x, stroke.size =1,
-                      category.names = c("Step 1", "Step 2", "Step 3", "Step 4"),
+                      category.names = c("Step 1", "Step 2", "Step 4"),
                       edge_lty = "solid", set_size = 6,
                       label_alpha = 0.5, label_percent_digit = 1) +
       ggplot2::scale_x_continuous(expand = expansion(mult = .2)) +
