@@ -11,7 +11,6 @@ pipeline2(
   meta,
   blocklist,
   control_name,
-  technical_replicates,
   remove_if = 1,
   step2_threshold = 0.5,
   seed = 42
@@ -25,8 +24,6 @@ pipeline2(
 \item{blocklist}{Vector of known previously identified contaminant features}
 
 \item{control_name}{Character name of controls within metadata}
-
-\item{technical_replicates}{Vector identifying technical replicates across batches}
 
 \item{remove_if}{Threshold for number of steps feature must be identified as potential contaminant to be removed from final cleaned count matrix. Default set to 1.}
 
@@ -47,7 +44,6 @@ composition.
 Other pipeline2: 
 \code{\link{step1}()},
 \code{\link{step2}()},
-\code{\link{step3}()},
 \code{\link{step4}()}
 }
 \concept{pipeline2}
